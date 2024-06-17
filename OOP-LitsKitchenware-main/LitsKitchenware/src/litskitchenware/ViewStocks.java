@@ -4,7 +4,14 @@ package litskitchenware;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author MERYLL MEDINA
@@ -16,8 +23,21 @@ public class ViewStocks extends javax.swing.JFrame {
      */
     public ViewStocks() {
         initComponents();
+       showStockInTable();
     }
+    public Connection getConnection() {
+    Connection con;
+    try {
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/lits", "root", "");
+        return con;
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        return null;
+    }
+}
+    
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -31,22 +51,22 @@ public class ViewStocks extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        Table1 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        CodeTF = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        PNameTF = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        CostTF = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        QuantityTF = new javax.swing.JTextField();
+        jComboBox1 = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        AddButt = new javax.swing.JButton();
+        UpdateButt = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -71,28 +91,33 @@ public class ViewStocks extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 153, 51), 4, true), "List of Stocks", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18), new java.awt.Color(0, 0, 0))); // NOI18N
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 153, 51), 4, true), "List of Stocks", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18))); // NOI18N
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        Table1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Product No.", "Product Code", "Category", "Product Name", "Cost", "Quanity"
+                "Product Code", "Category", "Product Name", "Cost", "Quanity"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        Table1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Table1MouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(Table1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -114,40 +139,40 @@ public class ViewStocks extends javax.swing.JFrame {
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 20, 540, 450));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 51), 4), "Product Information", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14), new java.awt.Color(0, 0, 0))); // NOI18N
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 51), 4), "Product Information", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Black", 0, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Product Code:");
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(22, 48, -1, -1));
-        jPanel3.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 270, -1));
+        jPanel3.add(CodeTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 270, -1));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI Black", 0, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Category:");
         jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, -1));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jPanel3.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 270, -1));
-
         jLabel3.setFont(new java.awt.Font("Segoe UI Black", 0, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Product Name:");
         jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, -1, -1));
-        jPanel3.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 270, -1));
+        jPanel3.add(PNameTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 270, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI Black", 0, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Cost:");
         jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 230, -1, -1));
-        jPanel3.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 270, -1));
+        jPanel3.add(CostTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 270, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Quantity:");
         jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, -1, -1));
-        jPanel3.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 270, -1));
+        jPanel3.add(QuantityTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 270, -1));
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Kitchen Equipment", "Kitchen Utensils"}));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 132, 270, 30));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 310, 380));
 
@@ -157,24 +182,135 @@ public class ViewStocks extends javax.swing.JFrame {
         jButton2.setText("jButton2");
         jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 580, -1, -1));
 
-        jButton3.setBackground(new java.awt.Color(255, 153, 51));
-        jButton3.setForeground(new java.awt.Color(0, 0, 0));
-        jButton3.setText("Add Product");
-        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 450, -1, -1));
+        AddButt.setBackground(new java.awt.Color(255, 153, 51));
+        AddButt.setText("Add Product");
+        AddButt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddButtActionPerformed(evt);
+            }
+        });
+        jPanel1.add(AddButt, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 450, -1, -1));
 
-        jButton4.setBackground(new java.awt.Color(255, 204, 102));
-        jButton4.setForeground(new java.awt.Color(0, 0, 0));
-        jButton4.setText("Save Changes");
-        jPanel1.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 450, -1, -1));
+        UpdateButt.setBackground(new java.awt.Color(255, 204, 102));
+        UpdateButt.setText("Save Changes");
+        jPanel1.add(UpdateButt, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 450, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 920, 520));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void AddButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddButtActionPerformed
+        // TODO add your handling code here:
+          String productCode = CodeTF.getText();
+    String category = jComboBox1.getSelectedItem().toString();
+    String productName = PNameTF.getText();
+    String cost = CostTF.getText();
+    String quantity = QuantityTF.getText();
+
+    // Database connection parameters
+    String DB_URL = "jdbc:mysql://localhost:3306/lits";
+    String DB_USER = "root";
+    String DB_PASSWORD = "";
+
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+
+    try {
+        // Establish connection to the database
+        conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        
+        // Prepare the SQL insert statement
+        String sql = "INSERT INTO stock (Code, Category, PName, Cost, Quantity) VALUES (?, ?, ?, ?, ?)";
+        pstmt = conn.prepareStatement(sql);
+        
+        // Set the values for the prepared statement
+        pstmt.setString(1, productCode);
+        pstmt.setString(2, category);
+        pstmt.setString(3, productName);
+        pstmt.setString(4, cost);
+        pstmt.setString(5, quantity);
+        
+        // Execute the insert statement
+        int rowsInserted = pstmt.executeUpdate();
+        if (rowsInserted > 0) {
+            JOptionPane.showMessageDialog(this, "Product added successfully!");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error adding product to the database.");
+    } finally {
+        // Close the database resources
+        try {
+            if (pstmt != null) pstmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    }//GEN-LAST:event_AddButtActionPerformed
+
+    private void Table1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Table1MouseClicked
+        // TODO add your handling code here:
+        int selectedRowIndex = Table1.getSelectedRow();
+    
+    if (selectedRowIndex != -1) {
+        String CodeValue = (String) Table1.getValueAt(selectedRowIndex, 0);
+        String CategoryValue = (String) Table1.getValueAt(selectedRowIndex, 1);
+        String PNameValue = (String) Table1.getValueAt(selectedRowIndex, 2);
+        String CostValue = (String) Table1.getValueAt(selectedRowIndex, 3);
+        String QuantityValue = (String) Table1.getValueAt(selectedRowIndex, 4);
+       
+
+        CodeTF.setText(CodeValue);
+        jComboBox1.setSelectedItem(CategoryValue);
+        PNameTF.setText(PNameValue);
+        CostTF.setText(CostValue);
+        QuantityTF.setText(QuantityValue);
+        
+    }
+        
+         int row = Table1.rowAtPoint(evt.getPoint());
+    int col = Table1.columnAtPoint(evt.getPoint());
+    Table1.editCellAt(row, col);
+    Table1.getCellEditor(row, col).cancelCellEditing();
+        
+    }//GEN-LAST:event_Table1MouseClicked
+
     /**
      * @param args the command line arguments
      */
+    
+      public void showStockInTable() {
+    Connection con = getConnection();
+    String sql = "SELECT * FROM stock"; // Adjust the query based on your database structure
+    try {
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        
+        DefaultTableModel model = (DefaultTableModel) Table1.getModel();
+        model.setRowCount(0);
+        
+        while (rs.next()) {
+            Object[] row = new Object[5]; // Adjust based on your table columns
+            row[0] = rs.getString("Code");
+            row[1] = rs.getString("Category");
+            row[2] = rs.getString("PName");
+            row[3] = rs.getString("Cost");
+            row[4] = rs.getString("Quantity");
+            model.addRow(row);
+        }
+        
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+}
+    
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -208,10 +344,15 @@ public class ViewStocks extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton AddButt;
+    private javax.swing.JTextField CodeTF;
+    private javax.swing.JTextField CostTF;
+    private javax.swing.JTextField PNameTF;
+    private javax.swing.JTextField QuantityTF;
+    private javax.swing.JTable Table1;
+    private javax.swing.JButton UpdateButt;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -223,10 +364,5 @@ public class ViewStocks extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
 }
